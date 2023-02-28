@@ -2,14 +2,17 @@ import subprocess
 import re
 import socket
 
-def scan_ports(host, start_port, end_port):
-    """Scan for open ports on the given host"""
+def scan_ports(host, start_port, end_port, protocol='tcp'):
+    """Scan for open ports on the given host and protocol"""
     open_ports = []
     for port in range(start_port, end_port + 1):
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.settimeout(1)
-                s.connect((host, port))
+                if protocol == 'tcp':
+                    s.connect((host, port))
+                else:
+                    s.sendto(b'', (host, port))
                 open_ports.append(port)
         except:
             pass
@@ -30,8 +33,13 @@ if __name__ == '__main__':
     networks = get_networks()
     for network in networks:
         print(f"Scanning ports for network {network}")
-        open_ports = scan_ports(network, 1, 65535)
-        if open_ports:
-            print(f"Open ports on network {network}: {open_ports}")
+        tcp_open_ports = scan_ports(network, 1, 65535, protocol='tcp')
+        udp_open_ports = scan_ports(network, 1, 65535, protocol='udp')
+        if tcp_open_ports:
+            print(f"Open TCP ports on network {network}: {tcp_open_ports}")
         else:
-            print(f"No open ports found on network {network}")
+            print(f"No open TCP ports found on network {network}")
+        if udp_open_ports:
+            print(f"Open UDP ports on network {network}: {udp_open_ports}")
+        else:
+            print(f"No open UDP ports found on network {network}")
