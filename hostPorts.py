@@ -2,6 +2,15 @@ import subprocess
 import re
 import socket
 
+def banners():
+    print("""
+    *********************************************
+        Host and TCP-UDP Port Scanner
+        Author: sergiovks
+    *********************************************
+    """)
+banners
+
 def scan_ports(host, start_port, end_port, protocol='tcp'):
     """Scan for open ports on the given host and protocol"""
     open_ports = []
